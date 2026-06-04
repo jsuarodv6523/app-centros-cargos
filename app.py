@@ -26,7 +26,7 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
     df2["IdEstudio"] = pd.to_numeric(df2["IdEstudio"], errors="coerce")
 
     df_teoria = pd.read_csv(teoria_file, sep="\t")
-df_teoria.columns = df_teoria.columns.str.strip()
+    df_teoria.columns = df_teoria.columns.str.strip()
 
     infantil = df2[df2["IdEstudio"].between(8424, 8429)]
     primaria = df2[df2["IdEstudio"].between(8430, 8435)]
