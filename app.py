@@ -47,7 +47,10 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
     on_bad_lines="skip"
     )
     df_teoria.columns = df_teoria.columns.str.strip()
-
+    df_teoria["N grupos Hasta"] = pd.to_numeric(df_teoria["N grupos Hasta"], errors="coerce")
+    df_teoria["A. Enclaves"] = pd.to_numeric(df_teoria["A. Enclaves"], errors="coerce")
+    df_teoria["N Cargos Teoria"] = pd.to_numeric(df_teoria["N Cargos Teoria"], errors="coerce")
+    ``
     infantil = df2[df2["IdEstudio"].between(8424, 8429)]
     primaria = df2[df2["IdEstudio"].between(8430, 8435)]
 
