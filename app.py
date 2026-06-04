@@ -10,8 +10,9 @@ st.title("Analisis de Centros Educativos")
 calplan_file = st.file_uploader("Calplan_Cargos", type="csv")
 sipe_file = st.file_uploader("SIPE", type="csv")
 enclave_file = st.file_uploader("AulaEnclaves", type="csv")
+teoria_file = st.file_uploader("CargosTeoria", type="csv")
 
-if calplan_file and sipe_file and enclave_file:
+if calplan_file and sipe_file and enclave_file and teoria_file:
 
     df1 = pd.read_csv(calplan_file, sep="\t")
 
@@ -23,6 +24,9 @@ if calplan_file and sipe_file and enclave_file:
 
     df2 = pd.read_csv(sipe_file, sep=";")
     df2["IdEstudio"] = pd.to_numeric(df2["IdEstudio"], errors="coerce")
+
+    df_teoria = pd.read_csv(teoria_file, sep="\t")
+df_teoria.columns = df_teoria.columns.str.strip()
 
     infantil = df2[df2["IdEstudio"].between(8424, 8429)]
     primaria = df2[df2["IdEstudio"].between(8430, 8435)]
@@ -59,37 +63,26 @@ if calplan_file and sipe_file and enclave_file:
 
     final["TotalGrupos"] = final["Infantil"] + final["Primaria"]
 
-    def calcular_cargos(row):
-        g = row["TotalGrupos"]
-        e = row["AulasEnclave"]
+    
+def calcular_cargos(row):
+    g = row["TotalGrupos"]
+    e = row["AulasEnclave"]
 
-        if e == 0:
-            if g <= 5:
-                return 1
-            elif g <= 8:
-                return 2
-            elif g <= 17:
-                return 3
-            else:
-                return 4
+    # Filtrar por aulas enclave
+    posibles = df_teoria[df_teoria["A. Enclaves"] == e]
 
-        if e == 1:
-            if g <= 5:
-                return 2
-            elif g <= 8:
-                return 3
-            else:
-                return 4
+    # Buscar filas que cumplen el rango
+    for _, r in posibles.iterrows():
+        hasta = r["N grupos Hasta"]
 
-        if e == 2:
-            if g <= 4:
-                return 2
-            elif g <= 7:
-                return 3
-            else:
-                return 4
+        if pd.isna(hasta):
+            continue
 
-        return 4
+        if g <= hasta:
+            return r["N Cargos Teoria"]
+
+    return None
+
 
     final["CargosTeoricos"] = final.apply(calcular_cargos, axis=1)
 
