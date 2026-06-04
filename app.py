@@ -14,18 +14,19 @@ teoria_file = st.file_uploader("CargosTeoria", type="csv")
 
 if calplan_file and sipe_file and enclave_file and teoria_file:
 
-    df1 = pd.read_csv(calplan_file, sep="\t", encoding="latin1")
-
+    df1 = pd.read_csv(calplan_file, sep=None, engine="python", encoding="latin1")
+    df1.columns = df1.columns.str.strip()
     cargos = df1.groupby([
         "Código Centro",
         "Etapa Centro",
         "Nombre Centro"
     ]).size().reset_index(name="CargosReales")
 
-    df2 = pd.read_csv(sipe_file, sep=";", encoding="latin1")
+    df2 = pd.read_csv(sipe_file, sep=None, engine="python", encoding="latin1")
+    df2.columns = df2.columns.str.strip()
     df2["IdEstudio"] = pd.to_numeric(df2["IdEstudio"], errors="coerce")
 
-    df_teoria = pd.read_csv(teoria_file, sep="\t", encoding="latin1")
+    df_teoria = pd.read_csv(teoria_file, sep=None, engine="python", encoding="latin1")
     df_teoria.columns = df_teoria.columns.str.strip()
 
     infantil = df2[df2["IdEstudio"].between(8424, 8429)]
@@ -47,7 +48,8 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
         on=["Código Centro", "Etapa Centro", "Nombre Centro"],
         how="outer").fillna(0)
 
-    df3 = pd.read_csv(enclave_file, sep="\t", encoding="latin1")
+    df3 = pd.read_csv(enclave_file, sep=None, engine="python", encoding="latin1")
+    df3.columns = df3.columns.str.strip()
     df3 = df3.rename(columns={"A.ENCLAVE": "AulasEnclave"})
 
     df3["Isla"] = df3["Código Centro"].astype(str).str[:2]
