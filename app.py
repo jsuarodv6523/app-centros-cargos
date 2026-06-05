@@ -17,26 +17,25 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
     
     df1 = pd.read_csv(
     calplan_file,
-    sep=None,
-    engine="python",
+    sep="\t",
     encoding="latin1",
     on_bad_lines="skip"
     )
     df1.columns = df1.columns.str.strip()
     
-    st.write("Columnas detectadas:", df1.columns)
-    st.write("Primeras filas:", df1.head())
-    
+        
     # Normalizar nombres
     df1.columns = df1.columns.str.strip().str.lower()
      
     # Detectar columnas automáticamente
-    cols = df1.columns.tolist()
+    cargos = df1.groupby([
+    "Código Centro",
+    "Etapa Centro",
+    "Nombre Centro"
+    ]).size().reset_index(name="CargosReales")
 
-    codigo_col = cols[0]
-    etapa_col = cols[1]
-    nombre_col = cols[2]
 
+    
     cargos = df1.groupby([
     codigo_col,
     etapa_col,
