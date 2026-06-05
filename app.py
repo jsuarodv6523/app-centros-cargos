@@ -23,6 +23,7 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
     on_bad_lines="skip"
     )
     df1.columns = df1.columns.str.strip()
+    st.write("Columnas Calplan:", df1.columns)
     cargos = df1.groupby([
         "Código Centro",
         "Etapa Centro",
