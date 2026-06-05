@@ -28,21 +28,21 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
     df1.columns = df1.columns.str.strip().str.lower()
      
     # Detectar columnas automáticamente
-    cargos = df1.groupby([
-    "Código Centro",
-    "Etapa Centro",
-    "Nombre Centro"
-    ]).size().reset_index(name="CargosReales")
-
-
     
+    # Limpiar nombres de columnas
+    df1.columns = df1.columns.str.strip()
+
+    # Renombrar automáticamente las 3 primeras columnas
+    df1.columns = [
+    "CodigoCentro",
+    "EtapaCentro",
+    "NombreCentro"
+    ] + list(df1.columns[3:])
     cargos = df1.groupby([
-    codigo_col,
-    etapa_col,
-    nombre_col
+    "CodigoCentro",
+    "EtapaCentro",
+    "NombreCentro"
     ]).size().reset_index(name="CargosReales")
-
-
 
     df2 = pd.read_csv(
     sipe_file,
