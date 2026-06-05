@@ -23,7 +23,9 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
     on_bad_lines="skip"
     )
     df1.columns = df1.columns.str.strip()
-    st.write("Columnas Calplan:", df1.columns)
+    
+    st.write("Columnas detectadas:", df1.columns)
+    st.write("Primeras filas:", df1.head())
     
     # Normalizar nombres
     df1.columns = df1.columns.str.strip().str.lower()
