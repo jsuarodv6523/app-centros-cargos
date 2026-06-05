@@ -33,11 +33,22 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
     df1.columns = df1.columns.str.strip()
 
     # Renombrar automáticamente las 3 primeras columnas
-    df1.columns = [
-    "CodigoCentro",
-    "EtapaCentro",
-    "NombreCentro"
-    ] + list(df1.columns[3:])
+    # Comprobar columnas
+    if len(df1.columns) < 3:
+    st.error("Error leyendo Calplan_Cargos")
+    st.stop()
+
+    # Usar columnas reales
+    codigo_col = df1.columns[0]
+    etapa_col = df1.columns[1]
+    nombre_col = df1.columns[2]
+
+    cargos = df1.groupby([
+    codigo_col,
+    etapa_col,
+    nombre_col
+]).size().reset_index(name="CargosReales")
+
     cargos = df1.groupby([
     "CodigoCentro",
     "EtapaCentro",
