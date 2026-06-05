@@ -28,11 +28,19 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
     # Normalizar nombres
     df1.columns = df1.columns.str.strip().str.lower()
      
+    # Detectar columnas automáticamente
+    cols = df1.columns.tolist()
+
+    codigo_col = cols[0]
+    etapa_col = cols[1]
+    nombre_col = cols[2]
+
     cargos = df1.groupby([
-    "codigo centro",
-    "etapa centro",
-    "nombre centro"
+    codigo_col,
+    etapa_col,
+    nombre_col
     ]).size().reset_index(name="CargosReales")
+
 
 
     df2 = pd.read_csv(
