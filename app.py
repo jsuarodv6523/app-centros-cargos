@@ -22,8 +22,8 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
 
     # Comprobar columnas
     if len(df1.columns) < 3:
-        st.error("Error leyendo Calplan_Cargos")
-        st.stop()
+    st.error("Error leyendo Calplan_Cargos")
+    st.stop()
 
     codigo_col = df1.columns[0]
     etapa_col = df1.columns[1]
