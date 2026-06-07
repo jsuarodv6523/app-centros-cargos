@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 
 st.set_page_config(page_title="Analisis Centros", layout="wide")
-
 st.title("Analisis de Centros Educativos")
 
 # Subida de archivos
@@ -11,10 +10,11 @@ sipe_file = st.file_uploader("SIPE", type="csv")
 enclave_file = st.file_uploader("AulaEnclaves", type="csv")
 teoria_file = st.file_uploader("CargosTeoria", type="csv")
 
-# SOLO si están los 4 archivos
 if calplan_file and sipe_file and enclave_file and teoria_file:
 
-    # CALPLAN
+    # =========================
+    # CALPLAN (ROBUSTO)
+    # =========================
     df1 = pd.read_csv(calplan_file, sep=None, engine="python", encoding="latin1", on_bad_lines="skip")
 
     if len(df1.columns) == 1:
@@ -34,7 +34,6 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
     nombre_col = df1.columns[2]
 
     cargos = df1.groupby([codigo_col, etapa_col, nombre_col]).size().reset_index(name="CargosReales")
-
     cargos.columns = ["Código Centro", "Etapa Centro", "Nombre Centro", "CargosReales"]
 
     # =========================
@@ -52,7 +51,7 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
     pri = primaria.groupby(["Código Centro", "Etapa Centro", "Nombre Centro"])["Grupos Actual PRV"].sum().reset_index(name="Primaria")
 
     sipe = pd.merge(inf, pri, how="outer",
-    on=["Código Centro", "Etapa Centro", "Nombre Centro"]
+        on=["Código Centro", "Etapa Centro", "Nombre Centro"]
     ).fillna(0)
 
     # =========================
@@ -86,11 +85,16 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
         on="Código Centro"
     ).fillna(0)
 
-    # =========================
-    # CÁLCULOS
-    # =========================
+    # 🔥 CLAVE (corrección del error que tenías)
+    final["Infantil"] = pd.to_numeric(final["Infantil"], errors="coerce").fillna(0)
+    final["Primaria"] = pd.to_numeric(final["Primaria"], errors="coerce").fillna(0)
+    final["AulasEnclave"] = pd.to_numeric(final["AulasEnclave"], errors="coerce").fillna(0)
+
     final["TotalGrupos"] = final["Infantil"] + final["Primaria"]
 
+    # =========================
+    # CÁLCULO TEÓRICO
+    # =========================
     def calcular_cargos(row):
         g = row["TotalGrupos"]
         e = row["AulasEnclave"]
@@ -106,7 +110,7 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
             if g <= hasta:
                 return r["N Cargos Teoria"]
 
-        return None
+        return 0
 
     final["CargosTeoricos"] = final.apply(calcular_cargos, axis=1)
 
@@ -123,7 +127,7 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
     final["Estado"] = final.apply(estado, axis=1)
 
     # =========================
-    # MOSTRAR
+    # RESULTADO FINAL
     # =========================
     st.subheader("Resultado final")
     st.dataframe(final)
