@@ -97,8 +97,8 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
     # CÁLCULO TEÓRICO
     # =========================
     def calcular_cargos(row):
-    g = row["TotalGrupos"]
-    e = row["AulasEnclave"]
+        g = row["TotalGrupos"]
+        e = row["AulasEnclave"]
 
     # Filtrar por aulas enclave
     posibles = df_teoria[df_teoria["A. Enclaves"] == e]
