@@ -14,23 +14,41 @@ teoria_file = st.file_uploader("CargosTeoria", type="csv")
 # SOLO si están los 4 archivos
 if calplan_file and sipe_file and enclave_file and teoria_file:
 
-    # CALPLAN
+   # =========================
+# CALPLAN (VERSIÓN ROBUSTA)
+# =========================
+df1 = pd.read_csv(
+    calplan_file,
+    sep=None,
+    engine="python",
+    encoding="latin1",
+    on_bad_lines="skip"
+)
+
+# Si todo se leyó en una sola columna → reintentar con separadores típicos
+if len(df1.columns) == 1:
+    df1 = pd.read_csv(calplan_file, sep=";", encoding="latin1", on_bad_lines="skip")
+
+if len(df1.columns) == 1:
     df1 = pd.read_csv(calplan_file, sep="\t", encoding="latin1", on_bad_lines="skip")
-    df1.columns = df1.columns.str.strip()
 
-    # Comprobar columnas
-    if len(df1.columns) < 3:
-        st.error("Error leyendo Calplan_Cargos")
-        st.stop()
+# Limpiar nombres
+df1.columns = df1.columns.str.strip()
 
-    codigo_col = df1.columns[0]
-    etapa_col = df1.columns[1]
-    nombre_col = df1.columns[2]
+# Comprobación final
+if len(df1.columns) < 3:
+    st.error("❌ Calplan_Cargos no tiene formato válido (revisa el CSV)")
+    st.stop()
 
-    cargos = df1.groupby([codigo_col, etapa_col, nombre_col]).size().reset_index(name="CargosReales")
+# Usar primeras columnas reales
+codigo_col = df1.columns[0]
+etapa_col = df1.columns[1]
+nombre_col = df1.columns[2]
 
-    # Renombrar para unificar
-    cargos.columns = ["Código Centro", "Etapa Centro", "Nombre Centro", "CargosReales"]
+cargos = df1.groupby([codigo_col, etapa_col, nombre_col]).size().reset_index(name="CargosReales")
+
+# Renombrar columnas estándar
+cargos.columns = ["Código Centro", "Etapa Centro", "Nombre Centro", "CargosReales"]
 
     # =========================
     # SIPE
