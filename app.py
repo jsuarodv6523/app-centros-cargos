@@ -17,7 +17,7 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
     # =========================
     # CALPLAN
     # =========================
-    df1 = pd.read_csv(calplan_file, sep="\t", encoding="latin1", on_bad_lines="skip")
+    f1 = pd.read_csv(calplan_file, sep=";", encoding="latin1", on_bad_lines="skip")
     df1.columns = df1.columns.str.strip()
 
     # Comprobar columnas
