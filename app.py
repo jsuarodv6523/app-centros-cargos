@@ -97,21 +97,25 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
     # CÁLCULO TEÓRICO
     # =========================
     def calcular_cargos(row):
-        g = row["TotalGrupos"]
-        e = row["AulasEnclave"]
+    g = row["TotalGrupos"]
+    e = row["AulasEnclave"]
 
-        posibles = df_teoria[df_teoria["A. Enclaves"] == e]
+    # Filtrar por aulas enclave
+    posibles = df_teoria[df_teoria["A. Enclaves"] == e]
 
-        for _, r in posibles.iterrows():
-            hasta = r["N grupos Hasta"]
+    # Ordenar por grupos
+    posibles = posibles.sort_values("N grupos Hasta")
 
-            if pd.isna(hasta):
-                continue
+    for _, r in posibles.iterrows():
+        hasta = r["N grupos Hasta"]
 
-            if g <= hasta:
-                return r["N Cargos Teoria"]
+        if pd.isna(hasta):
+            continue
 
-        return 0
+        if g <= hasta:
+            return r["N Cargos Teoria"]
+
+    return 0
 
     final["CargosTeoricos"] = final.apply(calcular_cargos, axis=1)
 
