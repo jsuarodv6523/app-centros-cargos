@@ -62,8 +62,8 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
     df_teoria.columns = df_teoria.columns.str.strip()
 
     df_teoria["N grupos Hasta"] = pd.to_numeric(df_teoria["N grupos Hasta"], errors="coerce")
-    df_teoria["A. Enclaves"] = pd.to_numeric(df_teoria["A. Enclaves"], errors="coerce")
-    df_teoria["N Cargos Teoria"] = pd.to_numeric(df_teoria["N Cargos Teoria"], errors="coerce")
+    df_teoria["A. Enclaves"] = pd.to_numeric(df_teoria["A. Enclaves"], errors="coerce").fillna(0)
+    df_teoria["N Cargos Teoria"] = pd.to_numeric(df_teoria["N Cargos Teoria"], errors="coerce").fillna(0)
 
     # =========================
     # UNIÓN
@@ -78,7 +78,7 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
         on="Código Centro"
     ).fillna(0)
 
-    # Eliminar columnas duplicadas (_y)
+    # Eliminar columnas duplicadas
     final = final.drop(columns=[
         col for col in final.columns if col.endswith("_y")
     ], errors="ignore")
@@ -86,4 +86,68 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
     # =========================
     # PREPARACIÓN
     # =========================
+    final["Infantil"] = pd.to_numeric(final["Infantil"], errors="coerce").fillna(0)
+    final["Primaria"] = pd.to_numeric(final["Primaria"], errors="coerce").fillna(0)
+    final["AulasEnclave"] = pd.to_numeric(final["AulasEnclave"], errors="coerce").fillna(0)
 
+    final["TotalGrupos"] = final["Infantil"] + final["Primaria"]
+
+    # =========================
+    # CÁLCULO TEÓRICO (CORREGIDO)
+    # =========================
+    def calcular_cargos(row):
+        g = row["TotalGrupos"]
+        e = row["AulasEnclave"]
+
+        if g == 0:
+            return 0
+
+        posibles = df_teoria[df_teoria["A. Enclaves"] == e]
+        posibles = posibles.sort_values("N grupos Hasta")
+
+        for _, r in posibles.iterrows():
+            hasta = r["N grupos Hasta"]
+
+            if pd.isna(hasta):
+                continue
+
+            if g <= hasta:
+                return r["N Cargos Teoria"]
+
+        return 0
+
+    final["CargosTeoricos"] = final.apply(calcular_cargos, axis=1)
+
+    # =========================
+    # RESULTADO
+    # =========================
+    final["Diferencia"] = final["CargosReales"] - final["CargosTeoricos"]
+
+    def estado(row):
+        if row["Diferencia"] == 0:
+            return "🟢 OK"
+        elif row["Diferencia"] < 0:
+            return "🔴 FALTAN"
+        else:
+            return "🟡 SOBRAN"
+
+    final["Estado"] = final.apply(estado, axis=1)
+
+    # Orden final (tabla limpia)
+    final = final[[
+        "Código Centro",
+        "Etapa Centro",
+        "Nombre Centro",
+        "Infantil",
+        "Primaria",
+        "AulasEnclave",
+        "CargosReales",
+        "CargosTeoricos",
+        "Estado"
+    ]]
+
+    # =========================
+    # MOSTRAR
+    # =========================
+    st.subheader("Resultado final")
+    st.dataframe(final)
