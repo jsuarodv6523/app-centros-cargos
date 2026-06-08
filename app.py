@@ -134,18 +134,22 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
     final["Estado"] = final.apply(estado, axis=1)
 
     # Orden final (tabla limpia)
-    final = final[[
-    "Código Centro",
-    "Etapa Centro",
-    "Nombre Centro",
-    "Infantil",
-    "Primaria",
-    "AulasEnclave",
-    "CargosReales",
-    "CargosTeoricos",
-    "Estado"
-    ]]
+   columnas = [
+        "Código Centro",
+        "Etapa Centro",
+        "Nombre Centro",
+        "Infantil",
+        "Primaria",
+        "AulasEnclave",
+        "CargosReales",
+        "CargosTeoricos",
+        "Estado"
+    ]
 
+# Solo usar las que existan (evita errores)
+columnas_existentes = [c for c in columnas if c in final.columns]
+
+final = final[columnas_existentes]
     # =========================
     # MOSTRAR
     # =========================
