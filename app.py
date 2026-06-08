@@ -96,16 +96,16 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
     col for col in final.columns if col.endswith("_y")
     ], errors="ignore")
 
-# Limpiar duplicados de columnas (_x, _y)
-final = final.rename(columns={
+    # Limpiar duplicados de columnas (_x, _y)
+    final = final.rename(columns={
     "Etapa Centro_x": "Etapa Centro",
     "Nombre Centro_x": "Nombre Centro"
-})
+    })
 
-# Eliminar columnas duplicadas
-final = final.drop(columns=[
+    # Eliminar columnas duplicadas
+    final = final.drop(columns=[
     col for col in final.columns if col.endswith("_y")
-], errors="ignore")
+    ], errors="ignore")
     # 🔥 CLAVE (corrección del error que tenías)
     final["Infantil"] = pd.to_numeric(final["Infantil"], errors="coerce").fillna(0)
     final["Primaria"] = pd.to_numeric(final["Primaria"], errors="coerce").fillna(0)
