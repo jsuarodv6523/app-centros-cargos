@@ -51,3 +51,39 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
     # =========================
     # ENCLAVES
     # =========================
+    df3 = pd.read_csv(enclave_file, sep="\t", encoding="latin1", on_bad_lines="skip")
+    df3.columns = df3.columns.str.strip()
+    df3 = df3.rename(columns={"A.ENCLAVE": "AulasEnclave"})
+
+    # =========================
+    # TEORIA
+    # =========================
+    df_teoria = pd.read_csv(teoria_file, sep="\t", encoding="latin1", on_bad_lines="skip")
+    df_teoria.columns = df_teoria.columns.str.strip()
+
+    df_teoria["N grupos Hasta"] = pd.to_numeric(df_teoria["N grupos Hasta"], errors="coerce")
+    df_teoria["A. Enclaves"] = pd.to_numeric(df_teoria["A. Enclaves"], errors="coerce")
+    df_teoria["N Cargos Teoria"] = pd.to_numeric(df_teoria["N Cargos Teoria"], errors="coerce")
+
+    # =========================
+    # UNIÓN
+    # =========================
+    final = pd.merge(cargos, sipe,
+        how="left",
+        on=["Código Centro", "Etapa Centro", "Nombre Centro"]
+    ).fillna(0)
+
+    final = pd.merge(final, df3,
+        how="left",
+        on="Código Centro"
+    ).fillna(0)
+
+    # Eliminar columnas duplicadas (_y)
+    final = final.drop(columns=[
+        col for col in final.columns if col.endswith("_y")
+    ], errors="ignore")
+
+    # =========================
+    # PREPARACIÓN
+    # =========================
+
