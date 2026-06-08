@@ -156,3 +156,14 @@ final = final.drop(columns=[
     # =========================
     st.subheader("Resultado final")
     st.dataframe(final)
+    final = final[[
+    "Código Centro",
+    "Etapa Centro",
+    "Nombre Centro",
+    "Infantil",
+    "Primaria",
+    "AulasEnclave",
+    "CargosReales",
+    "CargosTeoricos",
+    "Estado"
+    ]]
