@@ -135,15 +135,15 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
 
     # Orden final (tabla limpia)
     final = final[[
-        "Código Centro",
-        "Etapa Centro",
-        "Nombre Centro",
-        "Infantil",
-        "Primaria",
-        "AulasEnclave",
-        "CargosReales",
-        "CargosTeoricos",
-        "Estado"
+    "Código Centro",
+    "Etapa Centro",
+    "Nombre Centro",
+    "Infantil",
+    "Primaria",
+    "AulasEnclave",
+    "CargosReales",
+    "CargosTeoricos",
+    "Estado"
     ]]
 
     # =========================
