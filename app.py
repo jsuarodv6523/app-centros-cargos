@@ -85,6 +85,17 @@ if calplan_file and sipe_file and enclave_file and teoria_file:
         how="left",
         on="Código Centro"
     ).fillna(0)
+    # Limpiar duplicados de columnas (_x, _y)
+    final = final.rename(columns={
+    "Etapa Centro_x": "Etapa Centro",
+    "Nombre Centro_x": "Nombre Centro"
+    })
+
+    # Eliminar columnas duplicadas
+    final = final.drop(columns=[
+    col for col in final.columns if col.endswith("_y")
+    ], errors="ignore")
+
 # Limpiar duplicados de columnas (_x, _y)
 final = final.rename(columns={
     "Etapa Centro_x": "Etapa Centro",
